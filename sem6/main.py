@@ -23,7 +23,7 @@ def calculate(*args):
         elif 35 < float(I.get()) <= 40:
             dia.set(str('Ожирение 2 степени'))
         else:
-            dia.set(str('Ожирение 3 степени(в армию не идёшь))))'))
+            dia.set(str('Ожирение 3 степени'))
 
         print(dia.get())
     except ValueError:
