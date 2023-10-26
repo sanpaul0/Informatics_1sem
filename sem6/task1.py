@@ -2,37 +2,35 @@ from tkinter import *
 from tkinter import ttk
 
 
-# Задаем функцию пересчета. обратите внимание, что к feet и meters мы обращаемся как к глобальным переменным,
-# в общем случае так делать нехорошо *args означает, что функция может принимать любое количество переменных. здесь
-# они не используется, поэтому для общности написали так
+# Задаем функцию пересчета. обратите внимание, что к feet и meters мы обращаемся как к глобальным переменным, в общем случае так делать нехорошо
+# *args означает, что функция может принимать любое количество переменных. здесь они не используется, поэтому для общности написали так
 def calculate(*args):
     try:
-        weight = float(feet.get())
-        height = float(fee.get())
-        I.set(str(weight / (height / 100) ** 2))
-        if float(I.get()) <= 16:
-            dia.set(str('Выраженный дефицит массы тела'))
-        elif 16 < float(I.get()) <= 18.5:
-            dia.set(str('Недостаточная (дефицит) массы тела'))
-        elif 18.5 < float(I.get()) <= 25:
-            dia.set(str('Норма'))
-        elif 25 < float(I.get()) <= 30:
-            dia.set(str('Избыточная масса тела(предожирение)'))
-        elif 30 < float(I.get()) <= 35:
-            dia.set(str('Ожирение 1 степени'))
-        elif 35 < float(I.get()) <= 40:
-            dia.set(str('Ожирение 2 степени'))
-        else:
-            dia.set(str('Ожирение 3 степени'))
+        operation = str(feed.get())
+        num1 = float(feet.get())
+        num2 = float(fee.get())
+        if operation == '+':
+            ans.set(eval("num1 + num2"))
+        if operation == '-':
+            ans.set(eval("num1 - num2"))
+        if operation == '*':
+            ans.set(eval("num1 * num2"))
+        if operation == '/' and num2 == 0:
+            ans.set('math error')
+        elif operation == '/' and num2 != 0:
+            ans.set(eval("num1 / num2"))
+        if operation != '+' and operation != '-' and operation != '*' and operation != '/':
+            ans.set('syntax error')
 
-        print(dia.get())
+
+
     except ValueError:
         pass
 
 
 # Создадим основное окно приложения
 root = Tk()
-root.title("Feet to Meters")
+root.title("Калькулятор")
 
 '''
 Зададим виджет Frame с названием mainframe, который будет содержать элементы нашего интерфейса.
@@ -68,33 +66,33 @@ W,E (west-east) означает и левую и правую сторону о
 '''
 feet = StringVar()
 feet_entry = ttk.Entry(mainframe, width=7, textvariable=feet)
-feet_entry.grid(column=2, row=1, sticky=(W, E))
+feet_entry.grid(column=1, row=1, sticky=(W, E))
 
 fee = StringVar()
 fee_entry = ttk.Entry(mainframe, width=7, textvariable=fee)
-fee_entry.grid(column=3, row=1, sticky=(W, E))
+fee_entry.grid(column=1, row=2, sticky=(W, E))
+
+feed = StringVar()
+feed_entry = ttk.Entry(mainframe, width=7, textvariable=feed)
+feed_entry.grid(column=1, row=3, sticky=(W, E))
 
 '''
 Дальше создаем окно вывода. 
 '''
-I = StringVar()
-ttk.Label(mainframe, textvariable=I).grid(column=2, row=2, sticky=(W, E))
-
-dia = StringVar()
-ttk.Label(mainframe, textvariable=dia).grid(column=2, row=3, sticky=(W, E))
-
+ans = StringVar()
+ttk.Label(mainframe, textvariable=ans).grid(column=2, row=4, sticky=(W, E))
 '''
 По нажатии на кнопку будем выполнять функцию calculate. Поскольку в ней уже прописаны операции напрямую с feet и meters,
 то нам не нужно задавать какие-либо аргументы, функция автоматически положит нужное значение в meters и значение в 
 определенном выше Label обновится.
 '''
-ttk.Button(mainframe, text="Calculate", command=calculate).grid(column=3, row=3, sticky=W)
+ttk.Button(mainframe, text="Calculate", command=calculate).grid(column=3, row=4, sticky=W)
 
 # косметические подписи, обратите внимание на расположение
-ttk.Label(mainframe, text="вес (в килограммах), рост(в сантиметрах)").grid(column=1, row=1, sticky=W)
-ttk.Label(mainframe, text="индекс массы тела равен").grid(column=1, row=2, sticky=E)
-ttk.Label(mainframe, text="кг/м^2").grid(column=3, row=2, sticky=W)
-ttk.Label(mainframe, text="диагноз:").grid(column=1, row=3, sticky=E)
+ttk.Label(mainframe, text="число 1").grid(column=2, row=1, sticky=W)
+ttk.Label(mainframe, text="число 2").grid(column=2, row=2, sticky=W)
+ttk.Label(mainframe, text="операция(+,-,*,/)").grid(column=2, row=3, sticky=E)
+ttk.Label(mainframe, text='answer is').grid(column=1, row=4, sticky=W)
 
 # этот цикл позволяет "разбросать" элементы подальше друг от друга
 for child in mainframe.winfo_children():
