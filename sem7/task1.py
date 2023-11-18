@@ -74,7 +74,7 @@ def triangle_square(*args):
 
 vectors = []
 s = input()
-while (s != '0'):
+while s != '0':
     s.replace('{', '')
     s.replace('}', '')
     x, y, z = list(map(float, s.split(',')))
