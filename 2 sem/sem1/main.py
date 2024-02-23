@@ -28,6 +28,21 @@ class SumTree:
         return ls + rs
 
 
+def update(tree, v: int, pos: int, new_val: int):
+    def Update(v: int, tl:int,  tr: int, pos: int, new_val: int):
+        if tl == tr:
+            tree.tree[v] = new_val
+        else:
+            tm = (tl + tr) // 2
+            if pos <= tm:
+                Update(v * 2, tl, tm, pos, new_val)
+            else:
+                Update(v * 2 + 1, tm + 1, tr, pos, new_val)
+            tree.tree[v] = tree.tree[v*2] + tree.tree[v*2 + 1]
+
+    Update(v,0, len(tree.data)-1,  pos, new_val)
+
+
 def Sum(tree, v: int, l: int, r: int):
     def tree_sum(v: int, l: int, r: int, tl=0, tr=len(tree.data) - 1):
         if l > r:
@@ -43,20 +58,12 @@ def Sum(tree, v: int, l: int, r: int):
     return tree_sum(v, l, r)
 
 
-def update(v: int, tl: int, tr: int, position: int, new_value: int):
-    if tl == tr:
-        tree.tree[v] = new_value
-    else:
-        tm = (tl + tr) // 2
-        if position <= tm:
-            update(v * 2, tl, tm, position, new_value)
-        else:
-            update(v*2+1, tm+1, tr, position, new_value)
-        tree.tree[v] = tree.tree[2*v] + tree.tree[2*v+1]
-
-
 tree = SumTree([1, 2, 3, 4, 5, 6, 7, 0, 1, 1, 1])
+print(tree.tree)
+print(Sum(tree, 1, 4, 7))
+update(tree, 1, 5, 9)
 print(tree.tree)
 
 print(Sum(tree, 1, 4, 7))
-# запускать надо всегда при v=1(грубо говоря с 1 начинается нумерация, в нулевом элементе массива стоит 0, а само дерево идёт с 1 элемента)
+# запускать надо всегда при v=1(грубо говоря с 1 начинается нумерация, в нулевом элементе массива стоит 0,
+# а само дерево идёт с 1 элемента)
