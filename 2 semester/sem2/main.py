@@ -19,11 +19,24 @@ class Fenvik_tree:
 
     def calc_tree(self):
         for i in range(len(self.tree)):
+            if (i // 2) * 2 == i:
+                self.tree[i] = self.data[i]
+            else:
+                self.tree[i] = self.data[i]
+                for j in range(0, int(np.log2(len(self.tree)))):
+                    if (i - 2 ** j) & (i - 2 ** j + 1) == i & (i + 1):
+                        self.tree[i] += self.tree[i - 2 ** j]
+                        break
+                    else:
+                        self.tree[i] += self.tree[i - 2 ** j]
+
+    """def calc_tree(self):
+        for i in range(len(self.tree)):
             if i & (i + 1) != i:
                 for j in range(i & (i + 1), i + 1):
                     self.tree[i] += self.data[j]
             else:
-                self.tree[i] = self.data[i]
+                self.tree[i] = self.data[i]"""
 
 
 def update(tree, pos, new_val):
@@ -53,6 +66,6 @@ def sum(tree, l: int, r: int) -> int:
 
 
 tree = Fenvik_tree([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-update(tree, 0, 9)
+#update(tree, 0, 9)
 print(tree.tree)
 print(sum(tree, 0, 9))
