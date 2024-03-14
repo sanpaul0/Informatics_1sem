@@ -139,9 +139,9 @@ def who_is_my_parent(graph, pairs) -> dict:
         paths_sort(graph, elem)
     for i in range(len(pairs)):
         if pairs[i][1] in families[pairs[i][0]]:
-            ans[i] = True
+            ans[i+1] = True
         else:
-            ans[i] = False
+            ans[i+1] = False
     return ans
 
 
