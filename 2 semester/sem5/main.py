@@ -232,9 +232,11 @@ def inequality_system():
     for i in range(len(system)):
         system[i][0] = int(system[i][0])
         system[i][1] = int(system[i][1])
-        if system[i][2][0] == '<':
+        if system[i][2][0] == '>':
             system[i][0], system[i][1] = system[i][1], system[i][0]
-        system[i][2] = int(system[i][2][1:])
+            system[i][2] = - int(system[i][2][1:])
+        else:
+            system[i][2] = int(system[i][2][1:])
     syst = read_graph_as_neigh_matrix_w_s_special_for_problem(system)
     return not negative_cycle(syst)
 
@@ -295,7 +297,7 @@ print(dijkstra(graph, 1))"""
 #G_exp = read_graph_as_neigh_matrix_w()
 #print_matrix(Floyd_Warshall(G_exp))
 # g = read_graph_as_neigh_list_w()
-# print(inequality_system())
+print(inequality_system())
 # print(FB(g, 1))
 """ exp
 12
