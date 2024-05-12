@@ -1,14 +1,32 @@
 from heapq import *
+import copy
 
 
 def read_graph_as_edges_w():
     n = int(input())
-    graph = [list(map(int, input().split())) for i in range(n)]
+    graph = [list(map(str, input().split())) for i in range(n)]
     return graph
 
 
 def read_graph_as_neigh_list():
     edge_list = read_graph_as_edges()
+    graph_dict = {}  # dict()
+    vertex_set = set()
+    for edge in edge_list:
+        vertex_set.add(edge[0])
+        vertex_set.add(edge[1])
+    V_num = len(vertex_set)
+    for v in vertex_set:
+        graph_dict[v] = frozenset()
+    for edge in edge_list:
+        if edge[0] not in graph_dict.keys():
+            graph_dict[edge[0]] = frozenset([edge[1]])
+        else:
+            graph_dict[edge[0]] = graph_dict[edge[0]] | frozenset([edge[1]])
+    return graph_dict
+
+
+def read_graph_as_neigh_list_sp(edge_list):
     graph_dict = {}  # dict()
     vertex_set = set()
     for edge in edge_list:
@@ -135,6 +153,21 @@ def read_graph_as_neigh_matrix_w_s_special_for_problem(edge_list):
 def print_matrix(matrix):
     for line in matrix:
         print(*line)
+
+
+def DFS_stack(graph, v, visited=[]):
+    stack = []
+
+    visited.append(v)
+    stack.append(v)
+    while stack:
+        v = stack.pop()
+        print(v)
+        for neigh in graph[v]:
+            if neigh not in visited:
+                visited.append(neigh)
+                stack.append(neigh)
+    return visited
 
 
 def has_cycle(graph, v, visited=[]):
@@ -287,20 +320,37 @@ def FB_path(graph, s, t):
 
 
 def kruskal(graph):  # read_graph_as_edges
-    g = graph
-    for e in g:
+    Rs = graph
+    for e in Rs:
         e[0], e[2] = e[2], e[0]
-    g.sort()
-    tree_v = set()
-    tree_e = []
-    for e in g:
-        if e[1] not in tree_v or e[2] not in tree_v:
-            tree_v.add(e[1])
-            tree_v.add(e[2])
-            tree_e.append(e)
-        else:
-            continue
-    return tree_e
+    U = set()
+    D = {}
+    T = []
+
+    for r in Rs:
+        if r[1] not in U or r[2] not in U:
+            if r[1] not in U and r[2] not in U:
+                D[r[1]] = [r[1], r[2]]
+                D[r[2]] = D[r[1]]
+            else:  # иначе
+                if not D.get(r[1]):
+                    D[r[2]].append(r[1])
+                    D[r[1]] = D[r[2]]
+                else:
+                    D[r[1]].append(r[2])
+                    D[r[2]] = D[r[1]]
+
+            T.append(r)
+            U.add(r[1])
+            U.add(r[2])
+
+    for r in Rs:
+        if r[2] not in D[r[1]]:
+            T.append(r)
+            gr1 = D[r[1]]
+            D[r[1]] += D[r[2]]
+            D[r[2]] += gr1
+    return T
 
 
 def prim(graph):  # read_graph_as_neigh_list_w
@@ -326,6 +376,56 @@ def prim(graph):  # read_graph_as_neigh_list_w
     return tree_e
 
 
+def edges_in_MST():
+    n, m = map(int, input().split())
+    graph = []
+    g = []
+    U = set()
+    D = {}
+    T = [set() for i in range(n)]
+    ans = {}
+    for i in range(m):
+        ans[i + 1] = 'at least one'
+    for i in range(m):
+        edge = list(map(int, input().split()))
+        g.append(edge)
+        redge = copy.deepcopy(edge)
+        redge[0], redge[1] = redge[1], redge[0]
+        g.append(redge)
+        edge[0], edge[2] = edge[2], edge[0]
+        graph.append(copy.deepcopy(edge))
+    gr = copy.deepcopy(graph)
+    graph.sort()
+    c = graph[0][0]
+    while c < graph[-1][0]:
+        for r in graph:
+            if r[0] > c:
+                break
+            if (r[1] not in U) and (r[2] not in U):
+                D[len(D) + 1] = [r]
+                U.add(r[1])
+                U.add(r[2])
+                T[len(D) - 1].add(r[1])
+                T[len(D) - 1].add(r[2])
+            elif (r[1] not in U) or (r[2] not in U):
+                for elem in D:
+                    for e in D[elem]:
+                        if ((r[1] in e) or (r[2] in e)) and ((r[1] not in T[elem - 1]) or (r[2] not in T[elem - 1])):
+                            D[elem].append(r)
+                            T[elem - 1].add(r[1])
+                            T[elem - 1].add(r[2])
+                            U.add(r[1])
+                            U.add(r[2])
+                            break
+                    break
+    for r in gr:
+        for e in D:
+            if (r[1] in T[e - 1]) and (r[2] in T[e - 1]) and (r not in D[e]):
+                ans[gr.index(r) + 1] = 'none'
+
+    return ans
+
+
 """
 graph = read_graph_as_neigh_list_w()
 print(graph)
@@ -333,17 +433,34 @@ print(graph)
 print(dijkstra(graph, 1))"""
 # G = read_graph_as_neigh_matrix_w()
 # G_neg = read_graph_as_neigh_matrix_w()
-
 # print(read_graph_as_edges_w_s())
 # G_exp = read_graph_as_neigh_matrix_w()
 # print_matrix(Floyd_Warshall(G_exp))
 # g = read_graph_as_neigh_list_w()
 # print(inequality_system())
+# print(FB(g, 1))
+graph = read_graph_as_edges_w()
+print(kruskal(graph))
+print(edges_in_MST())
 
-graph = read_graph_as_neigh_list_w()
-print(FB(graph, 1))
-E = prim(graph)
-#print(E)
+E = kruskal(graph)
+print(E)
+"""
+10
+1 2 3
+1 3 6
+2 4 2
+2 5 5
+3 4 7
+4 5 1
+5 6 8
+4 6 11
+3 7 9
+7 6 10
+
+
+"""
+
 """ exp
 12
 1 2 <-1
@@ -382,4 +499,21 @@ E = prim(graph)
 5 3 1
 6 2 2
 6 4 1
+"""
+"""
+14
+1 4 6
+4 1 6
+1 2 1
+2 1 1
+3 2 2
+2 3 2
+2 5 3
+5 2 3
+2 6 1
+6 2 1
+5 3 1
+3 5 1
+6 4 1
+4 6 1
 """
